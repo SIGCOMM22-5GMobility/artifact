@@ -9,7 +9,7 @@ from utils.context import data_processed_dir, plot_dir
 import matplotlib.font_manager as font_manager
 import bisect
 
-# comment these line if latex not installed
+# comment out these lines if latex not installed
 plt.rc('font', family='sans-serif', serif='cm10')
 plt.rc('text', usetex=True)
 
@@ -22,6 +22,7 @@ df_driving = pd.read_csv(path.join(DATA_FOLDER, 'laptop_driving_merged.csv'))
 driving_ho = pd.read_csv(path.join(DATA_FOLDER, 'driving_2_5g_tracker.csv'))
 ho_tses = driving_ho['timestamp']
 
+#### Plot graph
 if True:  # use truth value to turn on and off plotting
     plot_name = 'video-conf-stats'
     plot_id = 'figure4'
