@@ -60,17 +60,17 @@ def get_cdf(arr, is_object=False):
     return arr_x, arr_y
 
 
-def remove_outliers(arr, max_deviations=3):
-    mean = np.mean(arr)
-    standard_deviation = np.std(arr)
-    distance_from_mean = abs(arr - mean)
-    not_outlier = distance_from_mean < max_deviations * standard_deviation
-    no_outliers = arr[not_outlier]
-    return no_outliers
-
-
-def get_std(arr, max_deviations=3):
-    return np.std(remove_outliers(arr, max_deviations))
+# def remove_outliers(arr, max_deviations=3):
+#     mean = np.mean(arr)
+#     standard_deviation = np.std(arr)
+#     distance_from_mean = abs(arr - mean)
+#     not_outlier = distance_from_mean < max_deviations * standard_deviation
+#     no_outliers = arr[not_outlier]
+#     return no_outliers
+#
+#
+# def get_std(arr, max_deviations=3):
+#     return np.std(remove_outliers(arr, max_deviations))
 
 
 def plot_handler(plt_, plot_id, plot_name, plot_path='plots', show_flag=True, ignore_eps=True, pad_inches=0):
