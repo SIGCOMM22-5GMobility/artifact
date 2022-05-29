@@ -1,0 +1,21 @@
+# data and plot folders
+data/
+# data-processed/
+# plots/
+clutter/
+
+# Distribution / packaging
+.Python
+build/
+
+# pyenv
+.python-version
+__pypackages__/
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE files
+.idea
