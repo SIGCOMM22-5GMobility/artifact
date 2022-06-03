@@ -26,25 +26,9 @@ SHOW_PLOT_FLAG = False
 EXPR_TYPE = 'figure14-16k_and_volumetric_video/volumetric-emulation'
 DATA_FOLDER = path.join(data_processed_dir, EXPR_TYPE)
 VOD_DATA_FOLDER=path.join(data_processed_dir, 'figure14-16k_and_volumetric_video/16k-vod-emulation')
-# print(DATA_FOLDER)
-
-## read all data here
-file_list = [
-                'vivo-wo-ho-sub.csv',
-                'vivo-w-ho-sub.csv',
-                'festive-wo-ho.csv',
-                'festive-w-ho.csv',
-                'vivo-w-ho-gt-sub.csv',
-                'festive-w-ho-gt.csv'
-            ]
-
-data = {}
-for file_name in file_list:
-    file_path = path.join(DATA_FOLDER, file_name)
-    data[file_name[:-4]] = pd.read_csv(file_path)
-# print(data)
 
 
+## preprocess vod data
 data_f = open(VOD_DATA_FOLDER+'/summary.json')
 data_vod = json.load(data_f)
 data_pred = open(VOD_DATA_FOLDER+'/predict_summary.json')
@@ -52,129 +36,68 @@ data_vod_pred = json.load(data_pred)
 colormap = {'RBHO': 'navy', 'robustMPCGT': 'violet', 'RB': 'brown', 'robustMPC': 'darkgreen', 'robustMPCHO': 'r', 'fastMPC': 'darkorange', 'fastMPCHO': 'b',
             'fastMPCGT': 'maroon', 'RBHOGT': 'purple'}
 
-
-## preprocess data
-quality_avg = []
-quality_std = []
-stall_avg = []
-stall_std = []
-for key in data.keys():
-    for i in range(0, len(data[key]['quality'])):
-        data[key]['quality'][i] = (data[key]['quality'][i] + 1) / 5
-        data[key]['stall'][i] = data[key]['stall'][i] * 100 / (5824 / 30)
-for key in data.keys():
-    quality_avg.append(data[key]['quality'].mean())
-    quality_std.append(data[key]['quality'].std() / 2)
-    stall_avg.append(data[key]['stall'].mean())
-    stall_std.append(data[key]['stall'].std() / 2)
-# for key in data.keys():
-#     quality_avg.append((data[key]['quality'].mean() + 1) / 5)
-#     quality_std.append(data[key]['quality'].std() / (5 * 2))
-#     stall_avg.append(data[key]['stall'].mean() * 100 / (5824 / 30))
-#     stall_std.append(data[key]['stall'].std() * 100 / ((5824 / 30) * 2))
-quality_improve = {'ViVo-PR':[], 'FESTIVE-PR':[], 'ViVo-GT':[], 'FESTIVE-GT':[]}
-stall_improve = {'ViVo-PR':[], 'FESTIVE-PR':[], 'ViVo-GT':[], 'FESTIVE-GT':[]}
-
-quality_improve['ViVo-PR'].append((data['vivo-w-ho-sub']['quality'] - data['vivo-wo-ho-sub']['quality']).mean() * 100)
-quality_improve['ViVo-PR'].append((data['vivo-w-ho-sub']['quality'] - data['vivo-wo-ho-sub']['quality']).std() * 100)
-stall_improve['ViVo-PR'].append((data['vivo-w-ho-sub']['stall'] - data['vivo-wo-ho-sub']['stall']).mean())
-stall_improve['ViVo-PR'].append((data['vivo-w-ho-sub']['stall'] - data['vivo-wo-ho-sub']['stall']).std())
-
-quality_improve['FESTIVE-PR'].append((data['festive-w-ho']['quality'] - data['festive-wo-ho']['quality']).mean() * 100)
-quality_improve['FESTIVE-PR'].append((data['festive-w-ho']['quality'] - data['festive-wo-ho']['quality']).std() * 100)
-stall_improve['FESTIVE-PR'].append((data['festive-w-ho']['stall'] - data['festive-wo-ho']['stall']).mean())
-stall_improve['FESTIVE-PR'].append((data['festive-w-ho']['stall'] - data['festive-wo-ho']['stall']).std())
-
-quality_improve['ViVo-GT'].append((data['vivo-w-ho-gt-sub']['quality'] - data['vivo-wo-ho-sub']['quality']).mean() * 100)
-quality_improve['ViVo-GT'].append((data['vivo-w-ho-gt-sub']['quality'] - data['vivo-wo-ho-sub']['quality']).std() * 100)
-stall_improve['ViVo-GT'].append((data['vivo-w-ho-gt-sub']['stall'] - data['vivo-wo-ho-sub']['stall']).mean())
-stall_improve['ViVo-GT'].append((data['vivo-w-ho-gt-sub']['stall'] - data['vivo-wo-ho-sub']['stall']).std())
-
-quality_improve['FESTIVE-GT'].append((data['festive-w-ho-gt']['quality'] - data['festive-wo-ho']['quality']).mean() * 100)
-quality_improve['FESTIVE-GT'].append((data['festive-w-ho-gt']['quality'] - data['festive-wo-ho']['quality']).std() * 100)
-stall_improve['FESTIVE-GT'].append((data['festive-w-ho-gt']['stall'] - data['festive-wo-ho']['stall']).mean())
-stall_improve['FESTIVE-GT'].append((data['festive-w-ho-gt']['stall'] - data['festive-wo-ho']['stall']).std())
-# print(quality_avg)
-# print(quality_std)
-# print(stall_avg)
-# print(stall_std)
-# print((data['vivo-w-ho-sub']['quality'].mean() - data['vivo-wo-ho-sub']['quality'].mean()) * 100 / data['vivo-wo-ho-sub']['quality'].mean())
-# print((data['festive-w-ho']['quality'].mean() - data['festive-wo-ho']['quality'].mean()) * 100 / data['festive-wo-ho']['quality'].mean())
-# print((data['vivo-w-ho-sub']['stall'].mean() - data['vivo-wo-ho-sub']['stall'].mean()) * 100 / data['vivo-wo-ho-sub']['stall'].mean())
-# print((data['festive-w-ho-gt']['stall'].mean() - data['festive-wo-ho']['stall'].mean()) * 100 / data['festive-wo-ho']['stall'].mean())
-# print(quality_improve['ViVo-PR'][0] - quality_improve['ViVo-GT'][0])
-# print(quality_improve['FESTIVE-PR'][0] - quality_improve['FESTIVE-GT'][0])
-# print(stall_improve['ViVo-PR'][0] - stall_improve['ViVo-GT'][0])
-# print(stall_improve['FESTIVE-PR'][0] - stall_improve['FESTIVE-GT'][0])
 schemes = data_vod.keys()
 pred_schemes = data_vod_pred.keys()
+
+## preprocess volumetric data
+f = open(os.path.join(DATA_FOLDER, 'quality_improve.json'))
+quality_improve = json.load(f)
+f.close()
+f = open(os.path.join(DATA_FOLDER, 'stall_improve.json'))
+stall_improve = json.load(f)
+f.close()
 
 ## plot data
 if True:
     plot_id = '50a'
     plot_name = 'volumetric-qoe'
     plt.close('all')
-    # fig, ax = plt.subplots(figsize=(4, 1.85))
-    fig = plt.figure(figsize=(18, 4.5), constrained_layout=True)
+    fig = plt.figure(figsize=(18, 4.5), constrained_layout=False)
     subfigs = fig.subfigures(1, 3, width_ratios=[3.5, 3, 3.5])
     ax0, ax1, ax2 = subfigs.flat[0].subplots(3, 1, sharex=True), subfigs.flat[1].subplots(1, 1), subfigs.flat[2].subplots(1, 2, sharey=True)
-    # fig, (ax0, ax1, ax2) = plt.subplots(1, 3, figsize=(17, 3.5), gridspec_kw={'width_ratios': [4, 3, 3]})
-    labels = {'ViVo':'ViVo', 'ViVo-PR':'ViVo-PR', 'FESTIVE':'FESTIVE', 'FESTIVE-PR':'FESTIVE-PR', 'ViVo-GT':'ViVo-GT', 'FESTIVE-GT':'FESTIVE-GT'}
-    markers = {'ViVo':'o', 'ViVo-PR':'^', 'FESTIVE':'o', 'FESTIVE-PR':'^', 'ViVo-GT':'o', 'FESTIVE-GT':'o'}
-    colors = {'ViVo':'violet', 'ViVo-PR':'r', 'FESTIVE':'brown', 'FESTIVE-PR':'navy', 'ViVo-GT':'darkgreen', 'FESTIVE-GT':'darkorange'}
-    linestyles = {'ViVo':'--', 'ViVo-PR':'-', 'FESTIVE':'--', 'FESTIVE-PR':'-', 'ViVo-GT':'--', 'FESTIVE-GT':'--'}
+    labels = {'ViVo-PR':'ViVo-PR', 'FESTIVE-PR':'FESTIVE-PR', 'ViVo-GT':'ViVo-GT', 'FESTIVE-GT':'FESTIVE-GT'}
+    markers = {'ViVo-PR':'^', 'FESTIVE-PR':'^', 'ViVo-GT':'o', 'FESTIVE-GT':'o'}
+    colors = {'ViVo-PR':'r', 'FESTIVE-PR':'navy', 'ViVo-GT':'darkgreen', 'FESTIVE-GT':'darkorange'}
+    linestyles = {'ViVo-PR':'-', 'FESTIVE-PR':'-', 'ViVo-GT':'--', 'FESTIVE-GT':'--'}
     fontsize = 22
     fontsize_label = 20
-    ## TODO: update the volumetric video results here (Anlan)
-    # for key in quality_improve.keys():
-    #     if(key == 'ViVo-GT' or key == 'ViVo-PR'):
-    #         myax = ax2[0]
-    #     else:
-    #         myax = ax2[1]
-    #     # ax2.scatter(stall_improve[key][0], quality_improve[key][0], label=key, marker=markers[key], color=colors[key])
-    #     # eb = ax2.errorbar(stall_improve[key][0], quality_improve[key][0], xerr=stall_improve[key][1], yerr=quality_improve[key][1], color=colors[key], capsize=6, lw=2, capthick=2)
-    #     myax.scatter(stall_improve[key][0], quality_improve[key][0], label=key, marker=markers[key], color=colors[key])
-    #     eb = myax.errorbar(stall_improve[key][0], quality_improve[key][0], xerr=stall_improve[key][1], yerr=quality_improve[key][1], color=colors[key], capsize=6, lw=2, capthick=2)
-    #     eb[-1][0].set_linestyle(linestyles[key])
-    #     eb[-1][1].set_linestyle(linestyles[key])
-    #     if(key == 'ViVo-GT' or key == 'FESTIVE-GT'):
-    #         eb[-1][0].set_dashes((0, (5, 5)))
-    #         eb[-1][1].set_dashes((0, (5, 5)))
-    #     if(key == 'ViVo-GT'):
-    #         myax.annotate(key, (stall_improve[key][0] + 0.1, quality_improve[key][0] - 7.0), color=colors[key], fontsize=fontsize_label)
-    #     if(key == 'ViVo-PR'):
-    #         myax.annotate("$\\textit{%s}$" % key, (stall_improve[key][0] + 0.11, quality_improve[key][0] + 3.0), color=colors[key], fontsize=fontsize_label)
-    #         # myax.annotate("$\\textit{%s}$" % key, color=colors[key], fontsize=fontsize_label, horizontalalignment="center", xy=(stall_improve[key][0], quality_improve[key][0]), xycoords='data',
-    #         #         xytext=(stall_improve[key][0] - 0.5, quality_improve[key][0] + 30.0), textcoords='data', arrowprops=dict(arrowstyle="<-, head_width=0.15, head_length=0.15", connectionstyle="arc3,rad=-0.3", lw=1, color=colors[key], linestyle = '--'))
-    #     if(key == 'FESTIVE-GT'):
-    #         myax.annotate(key, (stall_improve[key][0] + 0.2, quality_improve[key][0] + 30.0), color=colors[key], fontsize=17)
-    #     if(key == 'FESTIVE-PR'):
-    #         myax.annotate("$\\textit{%s}$" % key, (stall_improve[key][0] + 0.6, quality_improve[key][0] - 33.0), color=colors[key], fontsize=17)
-    # ax2[0].annotate("Better QoE", fontsize=fontsize, horizontalalignment="center", xy=(-0.03, 45.0), xycoords='data',
-    #                 xytext=(0.02, 30.0), textcoords='data', arrowprops=dict(arrowstyle="->, head_width=0.3", connectionstyle="arc3", lw=3))
-    # ax2[1].set_xlabel("Stall Time Change (\%)", fontsize=fontsize, x=-0.05)
-    # ax2[0].set_ylabel("Average Quality Change (\%)", fontsize=fontsize) # , loc='top'
-    # ax2[0].set_ylim(-15.0, 51.0)
-    # ax2[0].set_yticks(np.arange(-10.0, 55.0, 20.0))
-    # # ax2[0].tick_params(labelsize=fontsize_label)
-    # ax2[0].yaxis.set_major_formatter(mtick.PercentFormatter())
-    # ax2[0].set_xlim(0.1,-0.095)
-    # # ax2[0].set_xticks(np.arange(0.1, -0.1, -0.1), fontsize=fontsize_label)
-    # # ax2[0].set_xticks(np.arange(0.1, -0.1, -0.1))
-    # ax2[0].xaxis.set_major_formatter(mtick.PercentFormatter(decimals=2))
-    # ax2[1].set_xlim(0.6,-1.1)
-    # # ax2[1].set_xticks(np.arange(0.7, -1.0, -0.5), fontsize=fontsize_label)
-    # # ax2[1].set_xticks(np.arange(0.7, -1.0, -0.5))
-    # ax2[1].xaxis.set_major_formatter(mtick.PercentFormatter(decimals=2))
-    # ax2[0].set_title('(c) Volumetric Video QoE',x=1.0,y=-0.4,fontsize=fontsize)
-    # ax2[0].grid(linestyle='--')
-    # ax2[1].grid(linestyle='--')
-    # ax2[0].tick_params(axis='both', which='major', labelsize=fontsize_label)
-    # ax2[1].tick_params(axis='both', which='major', labelsize=fontsize_label)
-    # plt.subplots_adjust(wspace=0.05)
-    # plt.gca().invert_xaxis()
-    # plt.legend()
-    # fig.tight_layout()
+    for key in quality_improve.keys():
+        if(key == 'ViVo-GT' or key == 'ViVo-PR'):
+            myax = ax2[0]
+        else:
+            myax = ax2[1]
+        myax.scatter(stall_improve[key][0], quality_improve[key][0], label=key, marker=markers[key], color=colors[key])
+        eb = myax.errorbar(stall_improve[key][0], quality_improve[key][0], xerr=stall_improve[key][1], yerr=quality_improve[key][1], color=colors[key], capsize=6, lw=2, capthick=2)
+        eb[-1][0].set_linestyle(linestyles[key])
+        eb[-1][1].set_linestyle(linestyles[key])
+        if(key == 'ViVo-GT' or key == 'FESTIVE-GT'):
+            eb[-1][0].set_dashes((0, (5, 5)))
+            eb[-1][1].set_dashes((0, (5, 5)))
+        if(key == 'ViVo-GT'):
+            myax.annotate(key, (stall_improve[key][0] + 0.1, quality_improve[key][0] - 7.0), color=colors[key], fontsize=fontsize_label)
+        if(key == 'ViVo-PR'):
+            myax.annotate("$\\textit{%s}$" % key, (stall_improve[key][0] + 0.11, quality_improve[key][0] + 3.0), color=colors[key], fontsize=fontsize_label)
+        if(key == 'FESTIVE-GT'):
+            myax.annotate(key, (stall_improve[key][0] + 0.2, quality_improve[key][0] + 30.0), color=colors[key], fontsize=17)
+        if(key == 'FESTIVE-PR'):
+            myax.annotate("$\\textit{%s}$" % key, (stall_improve[key][0] + 0.6, quality_improve[key][0] - 33.0), color=colors[key], fontsize=17)
+    ax2[0].annotate("Better QoE", fontsize=fontsize, horizontalalignment="center", xy=(-0.03, 45.0), xycoords='data',
+                    xytext=(0.02, 30.0), textcoords='data', arrowprops=dict(arrowstyle="->, head_width=0.3", connectionstyle="arc3", lw=3))
+    ax2[1].set_xlabel("Stall Time Change (\%)", fontsize=fontsize, x=-0.05)
+    ax2[0].set_ylabel("Average Quality Change (\%)", fontsize=fontsize) # , loc='top'
+    ax2[0].set_ylim(-15.0, 51.0)
+    ax2[0].set_yticks(np.arange(-10.0, 55.0, 20.0))
+    ax2[0].yaxis.set_major_formatter(mtick.PercentFormatter())
+    ax2[0].set_xlim(0.1,-0.095)
+    ax2[0].xaxis.set_major_formatter(mtick.PercentFormatter(decimals=2))
+    ax2[1].set_xlim(0.6,-1.1)
+    ax2[1].xaxis.set_major_formatter(mtick.PercentFormatter(decimals=2))
+    ax2[0].set_title('(c) Volumetric Video QoE',x=1.0,y=-0.4,fontsize=fontsize)
+    ax2[0].grid(linestyle='--')
+    ax2[1].grid(linestyle='--')
+    ax2[0].tick_params(axis='both', which='major', labelsize=fontsize_label)
+    ax2[1].tick_params(axis='both', which='major', labelsize=fontsize_label)
+    plt.subplots_adjust(wspace=0.05)
 
     ### Plot 16K VOD ###
     ax0[0].set_xlim(1.5, -0.1)
