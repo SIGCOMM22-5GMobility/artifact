@@ -1,0 +1,18 @@
+# plot folders
+# plots/
+
+# Distribution / packaging
+.Python
+build/
+
+# pyenv
+.python-version
+__pypackages__/
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE files
+.idea
