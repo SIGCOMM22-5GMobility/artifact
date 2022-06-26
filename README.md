@@ -11,7 +11,14 @@ This measurement paper involves several experiments, with different methodologie
    ```bash
    pip3 install -r requirements.txt
    ```
-3. Run the scripts one by one from inside the [scripts](scripts) folder. The generated results will be put in [plots](plots) folder.
+### Generate plots
+Run the scripts one by one from inside the [scripts](scripts) folder. The generated results will be put in [plots](plots) folder.
 
+### Generate ``prognos`` results
+To generate results presented in Table 3 of the paper, navigate to the [src](src) folder and ``prognos`` or other comparative algorithms to get results. 
+
+The results output by the scripts contain statistics for both 4G-LTE and 5G-NR radio interfaces.
+
+> Note that we provide interactive notebooks for ``GBC`` and ``Stacked-LSTM`` which can be run directly on Google Colab.
 
 If there are any questions, feel free to contact us ([hassa654@umn.edu](hassa654@umn.edu)).
